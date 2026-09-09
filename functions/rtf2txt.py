@@ -5,7 +5,7 @@ from striprtf.striprtf import rtf_to_text
 def convert_rtf_to_txt_current(self):
     pubnumber = self.entry1.get()
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
     
     # base_dir = os.path.join(initial_dir, pubnumber)
     base_dir = os.path.join(initial_dir, pubnumber, "FOD")
@@ -40,7 +40,7 @@ def convert_rtf_to_txt_prev(self):
     pubnumber = self.entry1.get()
     prevpub = self.entry5.get().strip().replace('.zip', '')
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
     
     # base_dir = os.path.join(initial_dir, pubnumber, prevpub)
     base_dirpub = os.path.join(initial_dir, pubnumber, "FOD")

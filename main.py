@@ -6,6 +6,8 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 from datetime import datetime
 import os
+from pathlib import Path
+import sys
 import time
 # --- Added for Threading ---
 import threading
@@ -13,25 +15,36 @@ import queue
 # ---------------------------
 
 # --- Your Module Imports ---
-import compare_formlistnew
-import listtxtnew
-import formlisttxt2xlsxcitrix
-import extract_zipfile
-import revisionsforms
-import rtf2txt
-import CollectedForms
-import ExtractTitle
-import releasenotes
-import userguideupdate
-import copyguide
-import move_rtf
-import zip_rtf
-import copy_ft_output
-import deleteMODIFIED
-import copyFinalguide
-import clean_up
-import rename_rtf_frm_xlsx
+from functions import (
+    CollectedForms,
+    ExtractTitle,
+    clean_up,
+    compare_formlistnew,
+    copyFinalguide,
+    copy_ft_output,
+    copyguide,
+    deleteMODIFIED,
+    extract_zipfile,
+    formlisttxt2xlsxcitrix,
+    listtxtnew,
+    move_rtf,
+    releasenotes,
+    rename_rtf_frm_xlsx,
+    revisionsforms,
+    rtf2txt,
+    userguideupdate,
+    zip_rtf,
+)
 # ---------------------------
+
+# Resolve bundled visual assets relative to the running script or executable.
+APP_DIR = (
+    Path(sys.executable).resolve().parent
+    if getattr(sys, "frozen", False)
+    else Path(__file__).resolve().parent
+)
+ICON_PATH = APP_DIR / "logo.ico"
+LOGO_PATH = APP_DIR / "FOD.png"
 
 
 class App(tk.Tk):
@@ -41,8 +54,7 @@ class App(tk.Tk):
         self.geometry("500x480")
         self.resizable(False, False)  
         self.configure(bg="#2a0b05", highlightbackground="black", borderwidth=1, relief="solid", highlightthickness=1, highlightcolor="white")
-        # self.iconbitmap(r'C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\logo\logo.ico')
-        self.iconbitmap(r'\\fabwebd5.net\neptune\DataConversion\Tools\FOD\reference\logo.ico')      
+        self.iconbitmap(str(ICON_PATH))
         
         # --- Initialize Threading Attributes ---
         self.progress_queue = None
@@ -77,8 +89,7 @@ class App(tk.Tk):
         self.main_frame.pack(side="right", expand=True, fill="both", padx=10, pady=10)
         self.main_frame1 = tk.Frame(self.main_frame, bg="#223556", width=300, height=50)
         self.main_frame1.pack(side="top", expand=True, fill="both", padx=5, pady=5)
-        # self.image_file = r'C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\logo\FOD.png'
-        self.image_file = r'\\fabwebd5.net\neptune\DataConversion\Tools\FOD\reference\FOD.png'
+        self.image_file = str(LOGO_PATH)
         self.image = Image.open(self.image_file)
         self.image = self.image.resize((80, 80))  # Resize to desired size
         self.photo = ImageTk.PhotoImage(self.image)
@@ -149,11 +160,11 @@ class App(tk.Tk):
         def browse_zip_file():
             #C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive
             initial_dir = os.path.join(
-                r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary",
+                r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary",
                 self.entry1.get().strip(),"FOD"
             )
             if not os.path.isdir(initial_dir):
-                initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+                initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
             file_path = filedialog.askopenfilename(
                 initialdir=initial_dir,
                 title="Select Zip File",
@@ -174,12 +185,12 @@ class App(tk.Tk):
         def browse_userguide():
             #C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive
             initial_dir = os.path.join(
-                r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary",
+                r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary",
                 self.entry1.get().strip(), "FOD"
             )  
             
             if not os.path.isdir(initial_dir):
-                initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+                initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
             file_path = filedialog.askopenfilename(
                 initialdir=initial_dir,
                 title="Select User Guide",
@@ -405,7 +416,7 @@ class App(tk.Tk):
         popup = tk.Toplevel(self)
         popup.title(title)
         # Set the window icon
-        icon_path = r'C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\logo\logo.ico'
+        icon_path = str(ICON_PATH)
         try:
             popup.iconbitmap(icon_path)
         except Exception as e:

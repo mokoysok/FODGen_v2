@@ -1,29 +1,13 @@
-tkinter
-move_rtf
+# Python 3.13 is required because aspose-words does not yet support Python 3.14.
+# tkinter, csv, queue, shutil, sys, and zipfile are included with Python.
+# Runtime dependencies
+aspose-words==26.8.0
 openpyxl==3.1.5
-listtxtnew
-ExtractTitle
+pandas==2.3.3
+Pillow==11.3.0
+pywin32==312
+python-docx==1.2.0
 striprtf==0.0.29
-userguideupdate
-deleteMODIFIED
-releasenotes
-zipfile
-docx==0.2.4
-aspose
-csv
-PIL
-rename_rtf_frm_xlsx
-formlisttxt2xlsxcitrix
-copyFinalguide
-clean_up
-zip_rtf
-copy_ft_output
-win32com
-pandas==2.3.0
-rtf2txt
-copyguide
-CollectedForms
-compare_formlistnew
-extract_zipfile
-revisionsforms
-queue
+
+# Packaging tool
+auto-py-to-exe==2.50.1

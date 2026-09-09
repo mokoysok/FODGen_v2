@@ -2,7 +2,7 @@ This tool will generate FOD User Guides for New/Deleted/Revised Forms.
 
 Guide:
 1. Enter 5-digit Pub Number.
-2. Enter Release Number.\n
+2. Enter Release Number.
 3. Enter/Select Revenue Month and Year.
 4. Browse and select last release zip file. (Must be in the I:Drive/pubnum/FOD folder)
 5. Browse and select userguide reference. (Must be in the I:Drive/pubnum/FOD folder)
