@@ -10,7 +10,7 @@ def move_rtf_files(self):
     # Define the initial directory and build the base directory from the folder entry.
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
     # base_dir = os.path.join(initial_dir, folder_entry)
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"    
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"    
     base_dir = os.path.join(initial_dir, folder_entry, "FOD")
     
     # Define the destination "Old" folder inside base_dir.

@@ -38,7 +38,7 @@ def process_excel_file(file_path, label):
 def process_forms(self):
     folder_entry = self.entry1() if callable(self.entry1) else self.entry1.get()
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary" 
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary" 
     # base_dir = os.path.join(initial_dir, folder_entry)
     base_dir = os.path.join(initial_dir, folder_entry, "FOD")
     report_directory = os.path.join(base_dir, 'Report')

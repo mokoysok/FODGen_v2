@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A learning module explaining the FOD User Guide Generator codebase.">
+  <title>FOD User Guide Generator | Learning Module</title>
+  <style>
+    :root { --navy:#102b4e; --blue:#1e5b9f; --sky:#eaf4ff; --ink:#182230; --muted:#526273; --line:#d9e2ec; --accent:#f4ad42; --green:#168468; --white:#fff; }
+    * { box-sizing:border-box; } html { scroll-behavior:smooth; }
+    body { margin:0; font-family:Inter,Segoe UI,Arial,sans-serif; color:var(--ink); background:#f7f9fc; line-height:1.6; }
+    header { color:var(--white); background:linear-gradient(125deg,var(--navy),var(--blue)); padding:68px max(24px,calc((100% - 1120px)/2)); }
+    header p { max-width:720px; font-size:1.12rem; margin:15px 0 0; color:#deecff; } h1 { font-size:clamp(2rem,5vw,3.6rem); line-height:1.1; margin:0; } h2 { color:var(--navy); font-size:1.8rem; margin:0 0 14px; } h3 { color:var(--navy); margin:0 0 8px; }
+    .eyebrow { color:#ffd692; font-weight:800; letter-spacing:.09em; text-transform:uppercase; font-size:.78rem; margin-bottom:12px; }
+    nav { position:sticky; top:0; z-index:2; background:rgba(255,255,255,.96); border-bottom:1px solid var(--line); padding:10px 18px; display:flex; gap:18px; overflow:auto; }
+    nav a { white-space:nowrap; color:var(--blue); text-decoration:none; font-size:.9rem; font-weight:700; }
+    main { width:min(1120px,calc(100% - 40px)); margin:40px auto 80px; } section { margin:0 0 54px; scroll-margin-top:55px; }
+    .lead { font-size:1.12rem; color:var(--muted); max-width:850px; } .grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); }
+    .card, details { background:var(--white); border:1px solid var(--line); border-radius:12px; padding:20px; box-shadow:0 4px 14px rgba(27,50,77,.05); }
+    .card p, details p { color:var(--muted); margin:0; } .tag { display:inline-block; border-radius:50px; padding:3px 9px; background:var(--sky); color:var(--blue); font-size:.75rem; font-weight:800; margin-bottom:10px; }
+    .flow { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; align-items:stretch; } .step { position:relative; border-radius:10px; padding:15px; color:var(--white); background:var(--blue); font-size:.9rem; font-weight:700; } .step:nth-child(3) { background:var(--green); } .step:after { content:'→'; position:absolute; right:-9px; top:35%; color:var(--accent); font-size:1.5rem; z-index:1; } .step:last-child:after { display:none; }
+    .note { border-left:5px solid var(--accent); background:#fff8e9; padding:16px 19px; border-radius:6px; } code { font-family:Consolas,monospace; font-size:.88em; color:#a33308; background:#fff1e9; padding:2px 5px; border-radius:4px; } ul { padding-left:22px; } li { margin:5px 0; }
+    summary { cursor:pointer; font-weight:800; color:var(--navy); } details { margin:12px 0; } details[open] summary { margin-bottom:12px; } .function { border-top:1px solid var(--line); margin-top:12px; padding-top:12px; } .function:first-of-type { border-top:0; margin-top:0; padding-top:0; }
+    .file { color:var(--blue); font-weight:800; font-family:Consolas,monospace; font-size:.9rem; } .two { display:grid; grid-template-columns:1fr 1fr; gap:20px; } footer { background:var(--navy); color:#dceaff; padding:30px max(24px,calc((100% - 1120px)/2)); } @media(max-width:760px) { .flow { grid-template-columns:1fr; } .step:after { content:'↓'; left:48%; top:auto; bottom:-25px; } .two { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Portfolio learning module</div>
+    <h1>How the FOD User Guide Generator Works</h1>
+    <p>A guided tour of a Python/Tkinter desktop application that prepares Forms on Download (FOD) user-guide materials from release files, RTF documents, spreadsheets, and form lists.</p>
+  </header>
+  <nav><a href="#overview">Overview</a><a href="#architecture">Architecture</a><a href="#flow">Generate flow</a><a href="#topics">Function topics</a><a href="#zip">Zip flow</a><a href="#run">Run & package</a></nav>
+  <main>
+    <section id="overview">
+      <div class="eyebrow">01 · Orientation</div><h2>What this application does</h2>
+      <p class="lead">The FOD User Guide Generator automates the repetitive work of collecting release files, comparing form lists, identifying additions/deletions/revisions, and updating a user guide. The user enters release details in a desktop form, then the app runs a defined sequence of processing steps in the background.</p>
+      <div class="grid">
+        <article class="card"><div class="tag">Input</div><h3>Release information</h3><p>Publication number, release number, month/year, a prior ZIP file, the current user guide, and an FT output path.</p></article>
+        <article class="card"><div class="tag">Process</div><h3>Document pipeline</h3><p>RTF files are moved, copied, extracted, converted to text, compared, and organized into reports.</p></article>
+        <article class="card"><div class="tag">Output</div><h3>Updated guide + ZIP</h3><p>The final guide is copied, the release RTF files are zipped, and temporary processing folders are cleaned up.</p></article>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <div class="eyebrow">02 · Architecture</div><h2>How the project is organized</h2>
+      <div class="two"><div class="card"><h3><span class="file">main.py</span> — application controller</h3><p>Builds the Tkinter interface, validates inputs, starts worker threads, updates progress, and calls the functions in the correct order.</p></div><div class="card"><h3><span class="file">functions/</span> — processing modules</h3><p>Each file owns one focused responsibility: copying, converting, comparing, renaming, reporting, or cleaning files.</p></div></div>
+      <div class="two" style="margin-top:20px"><div class="card"><h3><span class="file">requirements.txt</span> — dependencies</h3><p>Lists Python 3.13 packages such as pandas, openpyxl, Pillow, striprtf, pywin32, Aspose Words, and Auto Py to Exe.</p></div><div class="card"><h3>Dynamic application assets</h3><p><code>APP_DIR</code> resolves the folder containing <code>main.py</code> during development or the executable when packaged. <code>logo.ico</code> and <code>FOD.png</code> are loaded from there instead of a share drive.</p></div></div>
+      <div class="note" style="margin-top:20px"><strong>Design pattern:</strong> most processing functions accept <code>self</code>. This lets them read values from the GUI fields, such as <code>self.entry1</code> for the publication number, without duplicating input code in every module.</div>
+    </section>
+
+    <section id="flow">
+      <div class="eyebrow">03 · Main workflow</div><h2>Generate button: end-to-end flow</h2>
+      <div class="flow"><div class="step">1. Enter release details</div><div class="step">2. Validate all fields</div><div class="step">3. Run processing in a worker thread</div><div class="step">4. Update progress through a queue</div><div class="step">5. Produce the updated guide</div></div>
+      <p class="lead" style="margin-top:24px"><code>check_path()</code> validates the form and opens a confirmation dialog. If confirmed, it starts <code>run_all_functions()</code> on a background thread. The worker sends status and percentage messages to a queue; the Tkinter main thread reads the queue and safely updates the pop-up and progress bar.</p>
+      <div class="grid"><article class="card"><h3>Why a thread?</h3><p>File copying, Excel work, ZIP extraction, Word automation, and comparisons can take time. A worker thread keeps the window responsive.</p></article><article class="card"><h3>Why a queue?</h3><p>Tkinter widgets should be changed from the main thread. The queue is the safe bridge between the worker and user interface.</p></article><article class="card"><h3>Where files go</h3><p>The processing directory is based on the publication number under the configured FOD network structure; reports are written in its <code>Report</code> folder.</p></article></div>
+    </section>
+
+    <section id="topics">
+      <div class="eyebrow">04 · Function topics</div><h2>Module-by-module learning guide</h2>
+      <p class="lead">Open a topic to see the purpose of its functions and where it fits in the workflow.</p>
+
+      <details open><summary><span class="file">move_rtf.py</span> — Topic: Archive the current release RTF files</summary><div class="function"><code>move_rtf_files(self)</code><p>Moves eligible RTF files from the current FOD area into the release-specific archive folder, preserving a clean working folder for new output.</p></div></details>
+      <details><summary><span class="file">copy_ft_output.py</span> — Topic: Bring in FT output files</summary><div class="function"><code>copy_ftoutput_rtf_files(self)</code><p>Reads the FT output path entered in the interface and copies RTF files into the current FOD working location.</p></div></details>
+      <details><summary><span class="file">extract_zipfile.py</span> — Topic: Unpack the previous release</summary><div class="function"><code>select_zip_file(self)</code><p>Returns the selected ZIP-file path from the GUI.</p></div><div class="function"><code>extract_zip(zip_file, extract_dir)</code><p>Uses Python's ZIP support to extract an archive into a specified folder.</p></div><div class="function"><code>extract_zip_action(self)</code><p>Creates a folder named after the selected ZIP and extracts the previous release there.</p></div></details>
+      <details><summary><span class="file">rtf2txt.py</span> — Topic: Convert form-list RTF to readable text</summary><div class="function"><code>convert_rtf_to_txt_current(self)</code><p>Finds the current FORMLIST RTF, converts its RTF markup to plain text with <code>striprtf</code>, and saves <code>Current_FORMLIST.txt</code>.</p></div><div class="function"><code>convert_rtf_to_txt_prev(self)</code><p>Performs the same conversion for the extracted previous release and saves <code>Previous_FORMLIST.txt</code>.</p></div></details>
+      <details><summary><span class="file">formlisttxt2xlsxcitrix.py</span> — Topic: Turn form lists into spreadsheets</summary><div class="function"><code>formlisttxt2xlsx_current(self)</code><p>Parses the current form-list text and produces an Excel representation for later matching.</p></div><div class="function"><code>formlisttxt2xlsx_prev(self)</code><p>Creates the equivalent Excel file from the previous release's form-list text.</p></div></details>
+      <details><summary><span class="file">rename_rtf_frm_xlsx.py</span> — Topic: Name RTF files from form-list data</summary><div class="function"><code>rename_rtf_from_excel1(self)</code><p>Uses <code>Current_FORMLIST.xlsx</code> to map current RTF filenames to form numbers and copies renamed files to <code>MODIFIED</code>.</p></div><div class="function"><code>rename_rtf_from_excel2(self)</code><p>Applies the same mapping approach to the previous release's RTF files.</p></div></details>
+      <details><summary><span class="file">revisionsforms.py</span> — Topic: Compare revised forms</summary><div class="function"><code>get_rtf_files(folder)</code><p>Lists RTF files that are candidates for comparison.</p></div><div class="function"><code>compare_rtf_files(file_path1, file_path2, compared_output, summary_output)</code><p>Uses Aspose Words to compare two documents and save both a comparison document and a summary.</p></div><div class="function"><code>comparertf(self)</code><p>Coordinates comparison of matching current and previous RTF files, writing revision outputs to the report area.</p></div></details>
+      <details><summary><span class="file">copyguide.py</span> — Topic: Copy the guide reference</summary><div class="function"><code>copy_file(self)</code><p>Copies the reference user guide into the current report/working location so it can be updated safely.</p></div></details>
+      <details><summary><span class="file">listtxtnew.py</span> — Topic: Identify revised forms</summary><div class="function"><code>listrevision_txt_files(self)</code><p>Builds a text list of files identified as revised.</p></div><div class="function"><code>revised2xlsx(self)</code><p>Converts the revised-forms text list to an Excel workbook.</p></div><div class="function"><code>match_form_titles(self)</code> and <code>match_form_titles1(...)</code><p>Match revised form records to the current form list so the report includes form-title context.</p></div></details>
+      <details><summary><span class="file">compare_formlistnew.py</span> — Topic: Find added and deleted forms</summary><div class="function"><code>compare_formlists(self)</code><p>Compares previous and current form-list workbooks to identify changes.</p></div><div class="function"><code>match_form_titles_add(self)</code><p>Matches added-form records to titles in the current form list.</p></div><div class="function"><code>match_form_titles_deleted(self)</code><p>Matches deleted-form records to titles in the previous form list.</p></div></details>
+      <details><summary><span class="file">CollectedForms.py</span> — Topic: Assemble report data</summary><div class="function"><code>process_excel_file(file_path, label)</code><p>Reads a report Excel file and formats its contents with a meaningful label.</p></div><div class="function"><code>process_forms(self)</code><p>Collects the added, deleted, and revised form report data and writes one <code>CollectedForms.txt</code> file.</p></div></details>
+      <details><summary><span class="file">ExtractTitle.py</span> — Topic: Read guide title and sample text</summary><div class="function"><code>extract_forms_title_from_rtf(self)</code><p>Converts the user guide RTF content to plain text and extracts the publication-title value needed by the final guide.</p></div><div class="function"><code>extract_forms_sample_from_rtf(self)</code><p>Extracts the sample/reference content used when preparing the new guide.</p></div></details>
+      <details><summary><span class="file">releasenotes.py</span> — Topic: Generate release notes</summary><div class="function"><code>generate_report(self=None)</code><p>Uses the selected month, year, and release information to create the release-notes text report.</p></div></details>
+      <details><summary><span class="file">deleteMODIFIED.py</span> — Topic: Remove an old temporary guide</summary><div class="function"><code>delete_modified_userguide_rtf(self)</code><p>Deletes the older <code>userguide_MODIFIED.rtf</code> file before a new updated guide is created.</p></div></details>
+      <details><summary><span class="file">userguideupdate.py</span> — Topic: Build the updated user guide</summary><div class="function"><code>convert_rtf_to_docx(...)</code> / <code>convert_docx_to_rtf(...)</code><p>Automate Microsoft Word through <code>win32com</code> to move between RTF and DOCX for editing.</p></div><div class="function"><code>modify_docx_title</code>, <code>modify_docx_relnotes</code>, <code>modify_docx_title_inpara</code>, <code>modify_docx_sample</code><p>Find and replace specific guide content while retaining document formatting where possible.</p></div><div class="function"><code>_modify_docx_section(...)</code>, <code>modify_docx_revisenotes</code>, <code>modify_docx_newforms</code>, <code>modify_docx_deletednotes</code><p>Reusable section-update logic for revised, newly added, and deleted forms.</p></div><div class="function"><code>userguide_update(self)</code><p>The orchestration function: reads report files, updates the DOCX content, converts it back to RTF, and removes the temporary DOCX file.</p></div></details>
+    </section>
+
+    <section id="zip">
+      <div class="eyebrow">05 · Finishing workflow</div><h2>Zip File button: release finalization</h2>
+      <div class="flow"><div class="step">1. Copy final guide</div><div class="step">2. Create RTF ZIP</div><div class="step">3. Remove temporary folders</div><div class="step">4. Show completion status</div><div class="step">5. Deliver release package</div></div>
+      <div style="margin-top:25px"><details open><summary><span class="file">copyFinalguide.py</span> — Topic: Publish the final guide</summary><div class="function"><code>copy_finalfile(self)</code><p>Copies the completed user guide from the report/working area into the final FOD release location.</p></div></details><details><summary><span class="file">zip_rtf.py</span> — Topic: Archive release RTF files</summary><div class="function"><code>zip_rtf_files(self)</code><p>Creates a ZIP archive containing the release RTF files and reports any archive error.</p></div></details><details><summary><span class="file">clean_up.py</span> — Topic: Clean temporary work</summary><div class="function"><code>clean_directories(self)</code><p>Removes the extracted previous-release folder and temporary report directory after the ZIP workflow finishes.</p></div></details></div>
+    </section>
+
+    <section id="run">
+      <div class="eyebrow">06 · Developer checklist</div><h2>Run, package, and extend the application</h2>
+      <div class="grid"><article class="card"><h3>Run locally</h3><p>Use Python 3.13 and the project environment:<br><code>.\.venv\Scripts\python.exe main.py</code></p></article><article class="card"><h3>Package it</h3><p>Use Auto Py to Exe in <strong>One Directory</strong> mode. Include <code>logo.ico</code> and <code>FOD.png</code> as additional files so they remain beside the executable.</p></article><article class="card"><h3>Add a new feature</h3><p>Create a focused module in <code>functions/</code>, import it in <code>main.py</code>, then add it to the appropriate workflow list with a clear progress description.</p></article></div>
+      <div class="note" style="margin-top:20px"><strong>Important operational note:</strong> document conversion relies on Microsoft Word automation through <code>pywin32</code>. A computer running the app needs Microsoft Word installed and accessible to the signed-in user.</div>
+    </section>
+  </main>
+  <footer>FOD User Guide Generator · Learning Module · Built from the project source to support onboarding, knowledge sharing, and portfolio presentation.</footer>
+</body>
+</html>

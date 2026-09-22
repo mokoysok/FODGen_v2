@@ -7,7 +7,7 @@ def clean_directories(self):
     folder_entry = temp_entry.get() if hasattr(temp_entry, "get") else temp_entry
     
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary" 
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary" 
     zip_file = self.entry5.get().strip()  # get ZIP file path from self.entry5
     if zip_file:
         zip_dir = os.path.dirname(zip_file)

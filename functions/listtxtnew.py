@@ -4,7 +4,7 @@ import os
 def listrevision_txt_files(self):
     entry1_value = self.entry1.get()    
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
     directory_path = os.path.join(initial_dir, entry1_value,"FOD", 'Report')
     print(f"Directory path: {directory_path}")
     if not os.path.isdir(directory_path):
@@ -26,7 +26,7 @@ def listrevision_txt_files(self):
 def revised2xlsx(self):
     try:
         txtfile = self.entry1.get()  # Assumes this is inside a class with entry1 as a Tkinter Entry widget
-        initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+        initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
         base_dir = os.path.join(initial_dir, txtfile,"FOD")
         input_txt_path = os.path.join(base_dir, 'Report', 'RevisedForms.txt')
         output_excel_path = os.path.join(base_dir, 'Report', 'RevisedForms.xlsx')
@@ -45,7 +45,7 @@ def revised2xlsx(self):
 def match_form_titles(self):
     try:
         txtfile = self.entry1.get()
-        initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+        initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
         base_dir = os.path.join(initial_dir, txtfile,"FOD")
         revised_excel_path = os.path.join(base_dir, 'Report', 'RevisedForms.xlsx')
         current_formlist_path = os.path.join(base_dir, 'Report', 'Current_FORMLIST.xlsx')

@@ -38,7 +38,7 @@ import openpyxl
 
 def formlisttxt2xlsx_current(self):
     txtfile = self.entry1.get()      
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
     base_dir = os.path.join(initial_dir, txtfile, "FOD")
     report_dir = os.path.join(base_dir, 'Report')
     os.makedirs(report_dir, exist_ok=True)
@@ -83,7 +83,7 @@ def formlisttxt2xlsx_current(self):
 
 def formlisttxt2xlsx_prev(self):
     txtfile = self.entry1.get()      
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
     base_dir = os.path.join(initial_dir, txtfile, "FOD")
     report_dir = os.path.join(base_dir, 'Report')
     os.makedirs(report_dir, exist_ok=True)

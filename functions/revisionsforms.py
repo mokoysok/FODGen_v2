@@ -57,7 +57,7 @@ def comparertf(self):
     # print(entry2_value)
     # Define the initial directory, update this path as needed
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
-    base_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+    base_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
     initial_dir = os.path.join(base_dir, entry1_value, "FOD")
     FOLDER1 = os.path.join(initial_dir, entry2_value, "MODIFIED")
     # FOLDER2 = os.path.join(initial_dir, entry1_value)

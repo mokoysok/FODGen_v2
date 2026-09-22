@@ -313,7 +313,7 @@ def userguide_update(self):
     folder_entry = temp_entry.get() if hasattr(temp_entry, "get") else temp_entry
 
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
-    initial_dir = r"\\fabwebd5.net\neptune\DataConversion\Prod\Secondary"
+    initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
     # base_dir = os.path.join(initial_dir, folder_entry)
     base_dir = os.path.join(initial_dir, folder_entry, "FOD")
     report_directory = os.path.join(base_dir, 'Report')
