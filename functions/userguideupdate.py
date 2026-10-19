@@ -227,18 +227,22 @@ def modify_docx_sample(docx_path, new_sample):
     try:
         doc = Document(docx_path)
         target_prefix = "Each file contains a single form or checklist. Each file name corresponds directly to the section number of the form or checklist. For example, "
-        target_suffix = " Forms on Disc, you may refer to the corresponding section in the publication for specific information about each form or checklist. A complete list of the forms and checklists is included with Forms on Disc in FORMLIST.rtf."
+        target_suffix = " Forms on Download, you may refer to the corresponding section in the publication for specific information about each form or checklist. A complete list of the forms and checklists is included with Forms on Download in FORMLIST.rtf."
+        target_pattern = re.compile(
+            r'^\s*Each\s+file\s+contains\s+a\s+single\s+form\s+or\s+checklist\.'
+            r'\s*Each\s+file\s+name\s+corresponds\s+directly\s+to\s+the\s+section\s+'
+            r'number\s+of\s+the\s+form\s+or\s+checklist\.\s*For\s+example,\s*',
+            re.IGNORECASE | re.DOTALL,
+        )
         found_and_replaced = False
 
         for para in doc.paragraphs:
-            if para.text.strip().startswith(target_prefix):
+            if target_pattern.match(para.text):
                 first_run_props = get_run_font_properties(para.runs[0] if para.runs else None)
                 para_style = para.style
 
                 # Construct and modify the full paragraph text
                 full_text = f"{target_prefix}{new_sample}{target_suffix}"
-                full_text = full_text.replace("Disc", "Download").replace("disc", "download")
-
                 para.clear()
                 run = para.add_run(full_text)
                 apply_font_properties(run, first_run_props)

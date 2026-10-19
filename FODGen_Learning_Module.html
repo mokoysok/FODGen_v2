@@ -50,9 +50,9 @@
     </section>
 
     <section id="flow">
-      <div class="eyebrow">03 · Main workflow</div><h2>Generate button: end-to-end flow</h2>
-      <div class="flow"><div class="step">1. Enter release details</div><div class="step">2. Validate all fields</div><div class="step">3. Run processing in a worker thread</div><div class="step">4. Update progress through a queue</div><div class="step">5. Produce the updated guide</div></div>
-      <p class="lead" style="margin-top:24px"><code>check_path()</code> validates the form and opens a confirmation dialog. If confirmed, it starts <code>run_all_functions()</code> on a background thread. The worker sends status and percentage messages to a queue; the Tkinter main thread reads the queue and safely updates the pop-up and progress bar.</p>
+      <div class="eyebrow">03 · Main workflow</div><h2>Choose the workflow that fits the task</h2>
+      <div class="flow"><div class="step">1. Enter release details</div><div class="step">2. Choose Full, Prepare, or Continue</div><div class="step">3. Validate only required fields</div><div class="step">4. Run selected steps in a worker thread</div><div class="step">5. Update progress through a queue</div></div>
+      <p class="lead" style="margin-top:24px">The interface now offers three paths: <code>Full Generate (1-23)</code> runs the complete workflow; <code>Prepare RTFs (1-2)</code> archives old RTF files and copies new FT output; and <code>Continue (3-23)</code> runs the remaining document-processing steps after preparation is complete. Each path starts selected functions on a background thread, while the Tkinter main thread safely updates the pop-up and progress bar through a queue.</p>
       <div class="grid"><article class="card"><h3>Why a thread?</h3><p>File copying, Excel work, ZIP extraction, Word automation, and comparisons can take time. A worker thread keeps the window responsive.</p></article><article class="card"><h3>Why a queue?</h3><p>Tkinter widgets should be changed from the main thread. The queue is the safe bridge between the worker and user interface.</p></article><article class="card"><h3>Where files go</h3><p>The processing directory is based on the publication number under the configured FOD network structure; reports are written in its <code>Report</code> folder.</p></article></div>
     </section>
 

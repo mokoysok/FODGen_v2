@@ -1,3 +1,39 @@
+import logging
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
+import sys
+
+# Resolve runtime files relative to the running script or executable.
+APP_DIR = (
+    Path(sys.executable).resolve().parent
+    if getattr(sys, "frozen", False)
+    else Path(__file__).resolve().parent
+)
+LOG_FILE = APP_DIR / "FODGen.log"
+
+LOGGER = logging.getLogger("fodgen")
+LOGGER.setLevel(logging.INFO)
+if not LOGGER.handlers:
+    log_handler = RotatingFileHandler(
+        LOG_FILE,
+        maxBytes=1_000_000,
+        backupCount=2,
+        encoding="utf-8",
+    )
+    log_handler.setFormatter(
+        logging.Formatter("%(asctime)s | %(levelname)s | %(threadName)s | %(message)s")
+    )
+    LOGGER.addHandler(log_handler)
+
+# This project is packaged and tested with Python 3.13. Check before importing
+# third-party modules so a wrong interpreter produces an actionable message.
+if sys.version_info[:2] != (3, 13):
+    LOGGER.critical("Unsupported Python version: %s", sys.version.split()[0])
+    raise RuntimeError(
+        "FOD User Guide Generator requires Python 3.13. "
+        "Run .\\.venv\\Scripts\\python.exe main.py or run_fodgen.bat."
+    )
+
 import tkinter.ttk as ttk
 import tkinter as tk
 from tkinter import messagebox, PhotoImage, Label, filedialog
@@ -6,8 +42,6 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 from datetime import datetime
 import os
-from pathlib import Path
-import sys
 import time
 # --- Added for Threading ---
 import threading
@@ -37,19 +71,38 @@ from functions import (
 )
 # ---------------------------
 
-# Resolve bundled visual assets relative to the running script or executable.
-APP_DIR = (
-    Path(sys.executable).resolve().parent
-    if getattr(sys, "frozen", False)
-    else Path(__file__).resolve().parent
-)
 ICON_PATH = APP_DIR / "logo.ico"
 LOGO_PATH = APP_DIR / "FOD.png"
+
+
+def _log_unhandled_exception(exc_type, exc_value, exc_traceback):
+    """Write otherwise unhandled application exceptions to the runtime log."""
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    LOGGER.critical(
+        "Unhandled application exception",
+        exc_info=(exc_type, exc_value, exc_traceback),
+    )
+
+
+def _log_unhandled_thread_exception(args):
+    """Write uncaught worker-thread exceptions to the runtime log."""
+    LOGGER.critical(
+        "Unhandled exception in thread '%s'",
+        args.thread.name if args.thread else "unknown",
+        exc_info=(args.exc_type, args.exc_value, args.exc_traceback),
+    )
+
+
+sys.excepthook = _log_unhandled_exception
+threading.excepthook = _log_unhandled_thread_exception
 
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
+        LOGGER.info("Application started. Log file: %s", LOG_FILE)
         self.title("FOD User Guide Generator®")
         self.geometry("500x480")
         self.resizable(False, False)  
@@ -209,14 +262,21 @@ class App(tk.Tk):
         self.entry7 = tk.Entry(entry7_frame, width=50, font=("Arial", 8))
         self.entry7.pack(side="left", padx=5)  
 
-        self.submit_button = tk.Button(self.sub_frame2, text="Generate", font=("Gagalin", 10), command=self.check_path, width=17, height=2, border=2, relief="solid", bg="#F7F7F8", fg="black")
-        self.submit_button.pack(pady=15, padx=10, side="left", anchor="w")
-        self.Revoke_button = tk.Button(self.sub_frame2, text="Zip File", command=self.check_pathrevoke, width=17, height=2, border=2, relief="solid", bg="#F7F7F8", fg="black")
-        self.Revoke_button.pack(padx=15, side="left", anchor="w")
-        # self.rerun_button = tk.Button(self.sub_frame2, text="Rerun", command=self.refresh_run, width=13, height=2)
-        # self.rerun_button.pack(padx=10, side="left", anchor="w")
-        self.exit_app_button = tk.Button(self.sub_frame2, text="Exit", command=self.exit_app, width=17, height=2, border=2, relief="solid", bg="#F7F7F8", fg="black")
-        self.exit_app_button.pack(padx=15, side="left", anchor="w")
+        # Users can run all steps together or separate RTF preparation (steps 1-2)
+        # from the rest of the Generate workflow (steps 3-23).
+        for column in range(5):
+            self.sub_frame2.columnconfigure(column, weight=1)
+
+        self.submit_button = tk.Button(self.sub_frame2, text="Full \nProcess", font=("Arial", 8), command=self.check_path, width=8, height=2, border=2, relief="solid", bg="#F7F7F8", fg="black")
+        self.submit_button.grid(row=0, column=0, padx=2, pady=10)
+        self.prepare_button = tk.Button(self.sub_frame2, text="Copy \nRTF Only", font=("Arial", 8), command=self.check_prepare_files, width=8, height=2, border=2, relief="solid", bg="#F7F7F8", fg="black")
+        self.prepare_button.grid(row=0, column=1, padx=2, pady=10)
+        self.continue_button = tk.Button(self.sub_frame2, text="User \nGuide", font=("Arial", 8), command=self.check_continue_generate, width=8, height=2, border=2, relief="solid", bg="#F7F7F8", fg="black")
+        self.continue_button.grid(row=0, column=2, padx=2, pady=10)
+        self.Revoke_button = tk.Button(self.sub_frame2, text="Zip\nFile", command=self.check_pathrevoke, width=8, height=2, border=2, relief="solid", bg="#F7F7F8", fg="black")
+        self.Revoke_button.grid(row=0, column=3, padx=2, pady=10)
+        self.exit_app_button = tk.Button(self.sub_frame2, text="Exit", command=self.exit_app, width=8, height=2, border=2, relief="solid", bg="#F7F7F8", fg="black")
+        self.exit_app_button.grid(row=0, column=4, padx=2, pady=10)
 
         self.sub_frame4 = tk.Frame(self.main_frame, bg="gray", width=150, height=100)
         self.sub_frame4.pack(side="top", expand=False, fill="both", padx=5, pady=5) 
@@ -254,48 +314,46 @@ class App(tk.Tk):
     # ----------------------------------------------------------------------
 
     def check_path(self):
-        """Starts the main 'Generate' process, using a background thread."""
-        
-        pub_number = self.entry1.get().strip()
-        rel_number = self.entry2.get().strip()
-        rev_month = self.entry3_var.get().strip()
-        year = self.entry4.get().strip()
-        prev_zip = self.entry5.get().strip()
-        userguide = self.entry6.get().strip()
-        ft_output = self.entry7.get().strip()
-
-        if not all([pub_number, rel_number, rev_month, year, prev_zip, userguide, ft_output]):
-            tk.messagebox.showerror("Error", "All fields must be filled in.")
+        """Starts the complete Generate workflow (steps 1 through 23)."""
+        required_values = [
+            self.entry1.get().strip(), self.entry2.get().strip(),
+            self.entry3_var.get().strip(), self.entry4.get().strip(),
+            self.entry5.get().strip(), self.entry6.get().strip(),
+            self.entry7.get().strip(),
+        ]
+        if not all(required_values):
+            messagebox.showerror("Error", "Full Generate requires all fields.")
             return
+        if messagebox.askyesno("Confirm", "Run the full Generate workflow (steps 1-23)?"):
+            self._start_main_process(self._main_processing_steps(), "Full Generate (steps 1-23)")
 
-        if tk.messagebox.askyesno("Confirm", "All fields are filled in. Start processing?"):
-            
-            self.progress_bar.set(0)
-            self.percent_label.configure(text="0%")
-            
-            self._set_button_state("disabled", "Processing...")
+    def check_prepare_files(self):
+        """Runs steps 1-2: archive existing RTFs and copy FT-output RTFs."""
+        if not all([self.entry1.get().strip(), self.entry7.get().strip()]):
+            messagebox.showerror("Error", "Prepare RTFs requires Pub Number and FT_OUTPUT_PATH.")
+            return
+        if messagebox.askyesno("Confirm", "Run Prepare RTFs (steps 1-2)?"):
+            self._start_main_process(self._main_processing_steps()[:2], "Prepare RTFs (steps 1-2)")
 
-            # 1. Setup pop-up window
-            self.popup_window = self._create_popup("Processing...")
-            
-            # 2. Setup Queue
-            self.progress_queue = queue.Queue()
-            
-            # 3. Setup and start Thread
-            self.worker_thread = threading.Thread(target=self.run_all_functions)
-            self.worker_thread.daemon = True
-            self.worker_thread.start()
-            
-            # 4. Start main thread periodic check
-            self.after(100, self.check_progress_queue)
+    def check_continue_generate(self):
+        """Runs steps 3-23 after the RTF preparation has already been completed."""
+        required_values = [
+            self.entry1.get().strip(), self.entry2.get().strip(),
+            self.entry3_var.get().strip(), self.entry4.get().strip(),
+            self.entry5.get().strip(), self.entry6.get().strip(),
+        ]
+        if not all(required_values):
+            messagebox.showerror(
+                "Error",
+                "Continue Generate requires Pub Number, Rel Number, Rev Month, Year, Previous Release ZipFile, and Current User Guide.",
+            )
+            return
+        if messagebox.askyesno("Confirm", "Run Continue Generate (steps 3-23)?"):
+            self._start_main_process(self._main_processing_steps()[2:], "Continue Generate (steps 3-23)")
 
-        else:
-            tk.messagebox.showerror("Error", "Process cancelled by user.")
-
-    def run_all_functions(self):
-        """Executes all MAIN processing steps in the background thread."""
-        
-        functions_to_run = [
+    def _main_processing_steps(self):
+        """Returns the ordered list of all Generate workflow steps."""
+        return [
             (move_rtf.move_rtf_files, "Moving RTF files..."),
             (copy_ft_output.copy_ftoutput_rtf_files, "Copying FT output RTF files..."),
             (extract_zipfile.extract_zip_action, "Extracting zip file..."),
@@ -303,8 +361,8 @@ class App(tk.Tk):
             (rtf2txt.convert_rtf_to_txt_prev, "Converting previous RTF to TXT..."),
             (formlisttxt2xlsxcitrix.formlisttxt2xlsx_prev, "Creating Excel from previous form list..."),
             (formlisttxt2xlsxcitrix.formlisttxt2xlsx_current, "Creating Excel from current form list..."),
-            (rename_rtf_frm_xlsx.rename_rtf_from_excel1, "Renaming RTF file 1..."),
-            (rename_rtf_frm_xlsx.rename_rtf_from_excel2, "Renaming RTF file 2..."),
+            (rename_rtf_frm_xlsx.rename_rtf_from_excel1, "Renaming current RTF files..."),
+            (rename_rtf_frm_xlsx.rename_rtf_from_excel2, "Renaming previous RTF files..."),
             (revisionsforms.comparertf, "Comparing RTF revisions..."),
             (copyguide.copy_file, "Copying guide file..."),
             (listtxtnew.listrevision_txt_files, "Listing revision TXT files..."),
@@ -318,9 +376,31 @@ class App(tk.Tk):
             (ExtractTitle.extract_forms_sample_from_rtf, "Extracting form samples from RTF..."),
             (releasenotes.generate_report, "Generating release notes report..."),
             (deleteMODIFIED.delete_modified_userguide_rtf, "Deleting MODIFIED user guide RTF..."),
-            (userguideupdate.userguide_update, "Updating user guide...")
+            (userguideupdate.userguide_update, "Updating user guide..."),
         ]
-        
+
+    def _start_main_process(self, functions_to_run, workflow_name):
+        """Starts a selected Generate workflow in a background thread."""
+        self.main_workflow_name = workflow_name
+        self.progress_bar.set(0)
+        self.percent_label.configure(text="0%")
+        self._set_button_state("disabled")
+        self.popup_window = self._create_popup(workflow_name)
+        self.progress_queue = queue.Queue()
+        self.worker_thread = threading.Thread(
+            target=self.run_main_functions,
+            args=(functions_to_run,),
+            daemon=True,
+        )
+        self.worker_thread.start()
+        self.after(100, self.check_progress_queue)
+
+    def run_all_functions(self):
+        """Backward-compatible entry point for the complete Generate workflow."""
+        self.run_main_functions(self._main_processing_steps())
+
+    def run_main_functions(self, functions_to_run):
+        """Executes selected Generate steps in the background thread."""
         total_steps = len(functions_to_run)
         
         try:
@@ -339,6 +419,7 @@ class App(tk.Tk):
             self.progress_queue.put(("COMPLETE", elapsed_time))
             
         except Exception as e:
+            LOGGER.exception("Generate workflow failed: %s", self.main_workflow_name)
             self.progress_queue.put(("ERROR", str(e)))
             
     # ----------------------------------------------------------------------
@@ -360,7 +441,7 @@ class App(tk.Tk):
             self.progress_bar.set(0)
             self.percent_label.configure(text="0%")
 
-            self._set_button_state("disabled", "Processing...")
+            self._set_button_state("disabled")
             
             # 1. Setup pop-up window
             self.popup_window = self._create_popup("Zipping Files...")
@@ -405,6 +486,7 @@ class App(tk.Tk):
             self.zip_queue.put(("COMPLETE", elapsed_time))
             
         except Exception as e:
+            LOGGER.exception("Zip workflow failed")
             self.zip_queue.put(("ERROR", str(e)))
 
     # ----------------------------------------------------------------------
@@ -420,6 +502,7 @@ class App(tk.Tk):
         try:
             popup.iconbitmap(icon_path)
         except Exception as e:
+            LOGGER.warning("Failed to set popup icon: %s", e)
             print(f"Failed to set icon: {e}")        
 
         popup.transient(self)
@@ -444,10 +527,12 @@ class App(tk.Tk):
         
         return popup
 
-    def _set_button_state(self, state, submit_text):
+    def _set_button_state(self, state):
         """A utility method to quickly set button states."""
-        self.submit_button.configure(state=state, text=submit_text)
-        self.Revoke_button.configure(state=state, text="Zip File")
+        self.submit_button.configure(state=state, text="Full\n1-23")
+        self.prepare_button.configure(state=state, text="Prepare\n1-2")
+        self.continue_button.configure(state=state, text="Continue\n3-23")
+        self.Revoke_button.configure(state=state, text="Zip\nFile")
         self.exit_app_button.configure(state=state, text="Exit")
 
 
@@ -480,14 +565,11 @@ class App(tk.Tk):
 
                     tk.messagebox.showinfo("Complete", f"Process Complete!\nElapsed Time: {elapsed_time:.2f} seconds")
                     
-                    # Final state for both processes
+                    # Restore all workflow choices once the selected workflow finishes.
                     if is_zip_process:
-                        self._set_button_state("normal", "Regenerate")
+                        self._set_button_state("normal")
                     else:
-                        # After a successful Generate, enable Zip File button
-                        self.submit_button.configure(state="disabled", text="Done")
-                        self.Revoke_button.configure(state="normal", text="Zip File")
-                        self.exit_app_button.configure(state="normal", text="Exit")
+                        self._set_button_state("normal")
                         
                     self.progress_bar.set(100)
                     self.percent_label.configure(text="100% Process Complete!")
@@ -496,6 +578,7 @@ class App(tk.Tk):
                 elif isinstance(item, tuple) and item[0] == "ERROR":
                     # Handle error signal
                     error_message = item[1]
+                    LOGGER.error("%s", error_message)
                     
                     if self.popup_window and self.popup_window.winfo_exists():
                         self.popup_window.destroy()
@@ -503,7 +586,7 @@ class App(tk.Tk):
                     tk.messagebox.showerror("Error", f"An error occurred:\n{error_message}")
                     
                     # Reset all buttons on error
-                    self._set_button_state("normal", "Generate")
+                    self._set_button_state("normal")
                     self.progress_bar.set(0)
                     self.percent_label.configure(text="0%")
                     return # Stop re-scheduling

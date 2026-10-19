@@ -9,7 +9,7 @@ def copy_file(self):
     # initial_dir = r"C:\Users\LABRADBM\Downloads\Local\YB\Python\FOD\I drive"
     # source_directory = r"C:\Users\LABRADBM\Downloads\Local\eComp Project\FOD"
     initial_dir = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Prod\Secondary"
-    source_directory = r"\\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Tools\FOD\reference"    
+    source_directory = r"\\legal.regn.net\FAB\Neptune\Prod\DataConversion\Tools\FOD\reference"    
     base_dir = os.path.join(initial_dir, folder_entry, "FOD")
     report_directory = os.path.join(base_dir, 'Report')
     

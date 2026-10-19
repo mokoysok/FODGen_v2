@@ -57,9 +57,15 @@ def extract_forms_sample_from_rtf(self):
             rtf_content = file.read()
         plain_text = rtf_to_text(rtf_content)
 
-        match = re.search(r'For example, (.+?) Forms on Disc,', plain_text)
+        # Support both legacy "Forms on Disc" and current "Forms on Download"
+        # wording. \s also accepts whitespace and line breaks produced by RTF conversion.
+        match = re.search(
+            r'For\s+example,\s*(.+?)\s+Forms\s+on\s+(?:Disc|Download)\s*,',
+            plain_text,
+            re.IGNORECASE | re.DOTALL,
+        )
         if match:
-            sample = match.group(1).strip()
+            sample = re.sub(r'\s+', ' ', match.group(1)).strip()
             print(f"Extracted Sample: {sample}")
             report_path = os.path.join(report_directory, "PubSample.txt")
             with open(report_path, "w", encoding="utf-8") as report_file:
